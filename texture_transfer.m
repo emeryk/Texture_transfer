@@ -3,26 +3,26 @@ clear
 
 pkg load image;
 
-S = imread("lave.jpg");
+S = imread('S14.jpg');
 S = im2double(S);
 
-patchSize = 49;
+patchSize = 9;
 
-T = imread("nicho.jpg");
+T = imread('globe_tgt.jpg');
 T = im2double(T);
 
-Sg = rgb2gray(S);
-Tg = rgb2gray(T);
+Sg = rgb2gray(S)<0.1;
+Tg = rgb2gray(T)<0.05;
 
-%figure(1)
-%imshow(Sg)
-%
-%figure(2)
-%imshow(Tg)
+figure(1)
+imshow(Sg)
+
+figure(2)
+imshow(Tg)
 
 Final = zeros(size(T, 1), size(T, 2), 3);
 
-alpha = 0.1; %Tolérance, à tester différentes valeurs
+alpha = 0.5; %Tolérance, à tester différentes valeurs
 
  
 
@@ -62,7 +62,7 @@ for (i=floor(patchSize/2)+1:patchSize:size(T,1)-floor(patchSize/2))
     
     patchD = Tg(i-floor(patchSize/2):i+floor(patchSize/2), j-floor(patchSize/2):j+floor(patchSize/2),:);
     
-    patchFinal = alpha * (patchA - patchB).^2 + (1 - alpha) * (patchC - patchD).^2;
+    patchFinal = alpha * (patchA - patchD).^2 + (1 - alpha) * (patchB - patchC).^2;
     
     %Copie du patch dans notre image finale
     
@@ -73,7 +73,7 @@ for (i=floor(patchSize/2)+1:patchSize:size(T,1)-floor(patchSize/2))
     
       for (f2=j-floor(patchSize/2):j+floor(patchSize/2))
       
-        Final(f1,f2) = patchFinal(tmpX, tmpY);
+        Final(f1,f2,:) = patchFinal(tmpX, tmpY,:);
         tmpY += 1;
       
       end
@@ -86,7 +86,7 @@ for (i=floor(patchSize/2)+1:patchSize:size(T,1)-floor(patchSize/2))
 
 end
     
-figure
+figure(3)
 imshow(Final)
 
 %Test avec rgb2gray ?
